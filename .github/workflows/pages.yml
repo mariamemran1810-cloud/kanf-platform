@@ -1,0 +1,49 @@
+name: Deploy marketing site to GitHub Pages
+
+on:
+  push:
+    branches: [dev, main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Prepare static site
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path _site | Out-Null
+          Copy-Item -Recurse packages/kanf/public/* _site/
+          Get-ChildItem -Path _site -Recurse -Filter *.html | ForEach-Object {
+            $c = Get-Content -Raw -Encoding UTF8 $_.FullName
+            $c = $c -replace 'href="/', 'href="'
+            $c = $c -replace 'src="/',  'src="'
+            [System.IO.File]::WriteAllText($_.FullName, $c, [System.Text.UTF8Encoding]::new($false))
+          }
+          # صفحات الدخول تبقى: تعرض ملاحظة «نسخة ثابتة» عند غياب الخادم
+          Write-Output "Site prepared:"; Get-ChildItem _site | Select-Object Name
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

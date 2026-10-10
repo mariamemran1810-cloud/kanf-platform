@@ -1,0 +1,24 @@
+{
+  "name": "kanf-platform",
+  "version": "0.1.0",
+  "description": "منصة كنف — منصة SaaS عربية للوكيل البرمجي الذكي (Kanf — Arabic-first AI coding agent platform)",
+  "private": true,
+  "type": "module",
+  "license": "MIT",
+  "scripts": {
+    "dev": "bun run src/index.ts",
+    "start": "bun run src/index.ts",
+    "seed": "bun run src/seed.ts",
+    "typecheck": "tsc -p tsconfig.json",
+    "lint": "oxlint src public"
+  },
+  "devDependencies": {
+    "@tsconfig/bun": "catalog:",
+    "@types/bun": "catalog:",
+    "typescript": "catalog:"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/talynabyd4-cyber/opencode"
+  }
+}

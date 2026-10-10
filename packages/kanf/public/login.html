@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="ar" dir="rtl" data-dir="rtl" data-theme="light">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>دخول — كنف</title>
+<link rel="icon" href="/assets/logo.svg" type="image/svg+xml" />
+<link rel="stylesheet" href="/assets/style.css" />
+</head>
+<body>
+<div class="auth-wrap">
+  <div class="auth-card">
+    <a class="brand" href="/">
+      <img src="/assets/logo.svg" alt="كنف" />
+      <span>كنف<small data-ar="منصة الوكيل البرمجي" data-en="AI coding agent platform">منصة الوكيل البرمجي</small></span>
+    </a>
+
+    <h2 data-ar="أهلاً بعودتك" data-en="Welcome back">أهلاً بعودتك</h2>
+    <p class="sub" data-ar="سجّل دخولك للمتابعة إلى لوحة التحكم" data-en="Log in to continue to your dashboard">سجّل دخولك للمتابعة إلى لوحة التحكم</p>
+
+    <div id="err" class="err" style="display:none"></div>
+
+    <form id="form" autocomplete="on">
+      <div class="field">
+        <label data-ar="البريد الإلكتروني" data-en="Email">البريد الإلكتروني</label>
+        <input class="input" type="email" name="email" required dir="ltr" placeholder="you@example.com" />
+      </div>
+      <div class="field">
+        <label data-ar="كلمة المرور" data-en="Password">كلمة المرور</label>
+        <input class="input" type="password" name="password" required dir="ltr" placeholder="••••••••" />
+      </div>
+      <button class="btn btn-primary" style="width:100%; margin-top:8px;" type="submit" data-ar="تسجيل الدخول" data-en="Log in">تسجيل الدخول</button>
+    </form>
+
+    <div class="divider" data-ar="أو" data-en="or">أو</div>
+
+    <div class="panel" style="margin-bottom:0;">
+      <div class="panel-body" style="padding:14px 16px;">
+        <div style="font-size:13px; color:var(--muted); margin-bottom:9px;" data-ar="حسابات تجريبية (اضغط للتعبئة):" data-en="Demo accounts (click to fill):">حسابات تجريبية (اضغط للتعبئة):</div>
+        <div class="row">
+          <button class="btn btn-sm" data-email="owner@kanf.dev" type="button">👑 owner@kanf.dev</button>
+          <button class="btn btn-sm" data-email="admin@kanf.dev" type="button">🛡 admin@kanf.dev</button>
+          <button class="btn btn-sm" data-email="member@kanf.dev" type="button">👤 member@kanf.dev</button>
+        </div>
+        <div class="hint" dir="ltr" style="margin-top:9px;">Kanf#2026</div>
+      </div>
+    </div>
+
+    <p class="switch">
+      <span data-ar="ليس لديك حساب؟" data-en="No account yet?">ليس لديك حساب؟</span>
+      <a href="/signup.html" data-ar="أنشئ واحداً" data-en="Create one">أنشئ واحداً</a>
+    </p>
+    <div class="row" style="justify-content:center; margin-top:6px;">
+      <button class="btn btn-ghost btn-sm" id="lang-btn" type="button">EN</button>
+      <button class="btn btn-ghost btn-sm" id="theme-btn" type="button">🌙</button>
+    </div>
+  </div>
+</div>
+
+<script src="/assets/i18n.js"></script>
+<script src="/assets/auth.js"></script>
+</body>
+</html>

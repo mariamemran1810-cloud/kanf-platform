@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="ar" dir="rtl" data-dir="rtl" data-theme="light">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>لوحة التحكم — كنف</title>
+<link rel="icon" href="/assets/logo.svg" type="image/svg+xml" />
+<link rel="stylesheet" href="/assets/style.css" />
+</head>
+<body>
+<div class="shell">
+  <!-- ================= الشريط الجانبي ================= -->
+  <aside class="sidebar">
+    <div class="side-brand">
+      <a class="brand" href="/dashboard">
+        <img src="/assets/logo.svg" alt="كنف" />
+        <span>كنف<small id="side-sub">لوحة التحكم</small></span>
+      </a>
+    </div>
+
+    <div class="nav-item" data-view="overview"><span>📊</span><span data-ar="نظرة عامة" data-en="Overview">نظرة عامة</span></div>
+    <div class="nav-item" data-view="projects"><span>🗂️</span><span data-ar="المشاريع" data-en="Projects">المشاريع</span><span class="count" id="cnt-projects">0</span></div>
+    <div class="nav-item" data-view="agent"><span>🤖</span><span data-ar="الوكيل" data-en="Agent">الوكيل</span><span class="count" id="cnt-sessions">0</span></div>
+    <div class="nav-item" data-view="activity"><span>🕓</span><span data-ar="سجل النشاط" data-en="Activity">سجل النشاط</span></div>
+    <div class="nav-item" data-view="members" id="nav-members" style="display:none"><span>👥</span><span data-ar="الأعضاء" data-en="Members">الأعضاء</span><span class="count" id="cnt-members">0</span></div>
+    <div class="nav-item" data-view="billing"><span>💳</span><span data-ar="الاشتراك" data-en="Subscription">الاشتراك</span></div>
+    <div class="nav-item" data-view="settings"><span>⚙️</span><span data-ar="الإعدادات" data-en="Settings">الإعدادات</span></div>
+
+    <div class="side-foot">
+      <div class="nav-item" id="lang-item"><span>🌐</span><span data-ar="English" data-en="العربية">English</span></div>
+      <div class="nav-item" id="theme-item"><span id="theme-ic">🌙</span><span data-ar="المظهر" data-en="Theme">المظهر</span></div>
+      <div class="nav-item" id="logout-item"><span>🚪</span><span data-ar="تسجيل الخروج" data-en="Log out">تسجيل الخروج</span></div>
+    </div>
+  </aside>
+
+  <!-- ================= المحتوى ================= -->
+  <main class="main">
+    <div class="topbar">
+      <h1 id="view-title">نظرة عامة</h1>
+      <div class="spacer"></div>
+      <button class="btn btn-sm" id="quick-new" style="display:none">＋ <span data-ar="مشروع جديد" data-en="New project">مشروع جديد</span></button>
+      <div class="user-chip">
+        <div class="avatar" id="me-avatar">؟</div>
+        <div class="meta"><b id="me-name">…</b><span id="me-role">…</span></div>
+      </div>
+    </div>
+
+    <div id="view-root"><div class="skel" style="width:60%"></div><div class="skel" style="width:40%; margin-top:12px"></div></div>
+  </main>
+</div>
+
+<div id="toast-host"></div>
+<div id="modal-host"></div>
+
+<script src="/assets/i18n.js"></script>
+<script src="/assets/app.js"></script>
+</body>
+</html>
