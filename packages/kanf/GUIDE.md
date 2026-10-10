@@ -154,6 +154,14 @@ KANF_SECRET="..." KANF_PORT=8080 bun run --cwd packages/kanf start
 
 خلف عامل ويب (Caddy / Nginx) مع HTTPS إلزامي لأن الجلسات تعتمد كوكي.
 
+### ⚠️ مشغّلات GitHub Actions الوراثية
+
+ورث المستودع **26 مشغّلاً** من OpenCode، منها ما يُغلق القضايا وطلبات الدمج
+**تلقائياً** ويعمل كل ٣٠ دقيقة. نُقلت كلها إلى
+[`.github/workflows-upstream-disabled/`](../.github/workflows-upstream-disabled/) —
+وهو مجلد يتجاهله GitHub تماماً. يبقى مُفعّلاً فقط `pages.yml` (نشر الموقع).
+التفاصيل وأسباب التعطيل موثّقة في README داخل ذلك المجلد.
+
 ### خيارات الاستضافة
 
 | الاستضافة | الطريقة |
