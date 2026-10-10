@@ -35,7 +35,7 @@ activity auditing, and subscription plans — all running on a zero-dependency c
 | Platform runtime | [Bun](https://bun.sh) `Bun.serve` — no web framework |
 | Database | SQLite via `bun:sqlite` — no ORM |
 | Auth | PBKDF2-SHA256 (200k iterations) + signed session cookies |
-| AI agent | OpenAI-compatible API, demo mode without a key |
+| AI agent | Three engines: the full **OpenCode** agent, an OpenAI-compatible API, or demo mode |
 | Interfaces | Arabic (RTL) first, English second |
 
 Zero runtime dependencies means `bun run dev:kanf` works immediately after cloning —
@@ -61,6 +61,25 @@ With no `KANF_AI_API_KEY` set, the agent runs in **demo mode** and explains how 
 ```bash
 KANF_AI_API_KEY="sk-..." bun run dev:kanf   # real model
 ```
+
+### Agent engines
+
+The agent can answer through three engines, tried in order until one succeeds:
+
+| Engine | When | What it is |
+| --- | --- | --- |
+| `opencode` | OpenCode sources are in this repo, or `opencode` is on `PATH` | A real coding agent with file and shell tools |
+| `openai` | `KANF_AI_API_KEY` is set | Direct OpenAI-compatible API call |
+| `demo` | always | Offline explanatory replies — the last resort |
+
+```bash
+KANF_ENGINE=opencode OPENCODE_API_KEY="..." bun run dev:kanf
+```
+
+Every reply carries an `engine` field (`opencode` · `openai` · `demo`) so clients know which one
+actually answered. `KANF_ENGINE=auto` (the default) only tries OpenCode when it is configured,
+so a fresh clone stays instant. All variables are documented in
+[`packages/kanf/GUIDE.md`](packages/kanf/GUIDE.md).
 
 ## Repository layout
 

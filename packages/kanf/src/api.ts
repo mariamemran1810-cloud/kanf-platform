@@ -186,6 +186,7 @@ export const routes: [string, string, (ctx: Ctx) => Promise<Response> | Response
       sessions: agent.agentSessions(user.id),
       model: agent.defaultModel(),
       live: agent.modelAvailable(),
+      engine: agent.activeEngine(),
       strings: dict(localeOf(user, req)),
     })
   }],
