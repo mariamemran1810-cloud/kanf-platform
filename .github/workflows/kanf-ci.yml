@@ -1,0 +1,43 @@
+name: Kanf CI
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "packages/kanf/**"
+      - ".github/workflows/kanf-ci.yml"
+  pull_request:
+    paths:
+      - "packages/kanf/**"
+      - ".github/workflows/kanf-ci.yml"
+  workflow_dispatch:
+
+concurrency:
+  group: kanf-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    name: فحص الأنواع والكود
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.3.14
+
+      # سكربتات البناء الأصلية تُتخطى عمداً: تحتاج Python + MSVC لوحدات tree-sitter،
+      # وهي ليست ضرورية لفحص منصة كنف.
+      - name: تثبيت الاعتماديات
+        run: bun install --ignore-scripts --frozen-lockfile
+
+      - name: فحص الأنواع (tsc)
+        run: bun run --cwd packages/kanf typecheck
+
+      - name: فحص الكود (oxlint)
+        run: bun run --cwd packages/kanf lint
+
+      - name: حزمة الكود للتأكد من سلامة الوحدات
+        run: bun build packages/kanf/src/index.ts --target=bun --outdir /tmp/kanf-bundle
