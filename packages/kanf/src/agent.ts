@@ -57,8 +57,26 @@ export function addMessage(sessionId: string, role: string, content: string, tok
   }
 }
 
-export function messages(sessionId: string) {
-  return all(`SELECT * FROM messages WHERE session_id = ? ORDER BY created_at ASC`, sessionId)
+type MessageRow = { role: string; content: string }
+
+export function messages(sessionId: string): MessageRow[] {
+  return all<MessageRow>(
+    `SELECT role, content FROM messages WHERE session_id = ? ORDER BY created_at ASC`,
+    sessionId,
+  )
+}
+
+/** تحويل قيمة مجهولة إلى سجل بأمان (بديل آمن عن `as`) */
+function asRecord(value: unknown): Record<string, unknown> {
+  return typeof value === "object" && value !== null ? (value as Record<string, unknown>) : {}
+}
+
+function asNumber(value: unknown): number {
+  return typeof value === "number" && Number.isFinite(value) ? value : 0
+}
+
+function asString(value: unknown, fallback = ""): string {
+  return typeof value === "string" ? value : fallback
 }
 
 function estimateTokens(text: string) {
@@ -87,9 +105,7 @@ function demoReply(prompt: string): string {
 }
 
 export async function runAgent(sessionId: string, userPrompt: string) {
-  const history = messages(sessionId)
-    .slice(-20)
-    .map((m) => ({ role: (m as { role: string }).role, content: (m as { content: string }).content }))
+  const history = messages(sessionId).slice(-20).map((m) => ({ role: m.role, content: m.content }))
 
   addMessage(sessionId, "user", userPrompt, estimateTokens(userPrompt))
 
@@ -123,13 +139,14 @@ export async function runAgent(sessionId: string, userPrompt: string) {
     return { reply, tokens: 0, live: false, error: true }
   }
 
-  const data = (await res.json()) as {
-    choices?: { message?: { content?: string } }[]
-    usage?: { prompt_tokens?: number; completion_tokens?: number }
-  }
-  const reply = data.choices?.[0]?.message?.content ?? "(رد فارغ)"
-  const tokens =
-    (data.usage?.prompt_tokens ?? 0) + (data.usage?.completion_tokens ?? 0) || estimateTokens(reply)
+  // استجابة النموذج تصل من نظام خارجي: نتحقق من شكلها بدل افتراضه
+  const data = asRecord(await res.json().catch(() => null))
+  const choices = Array.isArray(data.choices) ? data.choices : []
+  const message = asRecord(asRecord(choices[0]).message)
+  const reply = asString(message.content, "(رد فارغ)")
+
+  const usage = asRecord(data.usage)
+  const tokens = asNumber(usage.prompt_tokens) + asNumber(usage.completion_tokens) || estimateTokens(reply)
   addMessage(sessionId, "assistant", reply, tokens)
   return { reply, tokens, live: true }
 }
