@@ -3,7 +3,8 @@ import { get, run, now, all } from "./db"
 import { createUser, logActivity } from "./auth"
 import { dict } from "./i18n"
 
-const PORT = Number(process.env.KANF_PORT ?? 4040)
+// Render/Heroku يمرّران PORT؛ نحترمهما مع بقاء KANF_PORT أولوية للتشغيل المحلي
+const PORT = Number(process.env.KANF_PORT ?? process.env.PORT ?? 4040)
 
 const MIME: Record<string, string> = {
   ".html": "text/html; charset=utf-8",

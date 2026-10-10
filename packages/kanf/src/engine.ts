@@ -1,5 +1,5 @@
 import { spawn } from "node:child_process"
-import { existsSync, readFileSync } from "node:fs"
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs"
 import { join, resolve } from "node:path"
 
 /**
@@ -78,6 +78,90 @@ export function engineAvailable(): boolean {
 }
 
 /**
+ * جذر مساحات العمل — كل مشروع يحصل على مجلد مستقل يعمل فيه الوكيل،
+ * ومجلد `_personal` للمحادثات غير المرتبطة بمشروع.
+ */
+export function workspaceRoot(): string {
+  const root = process.env.KANF_WORKSPACE_ROOT
+  if (root) return resolve(root)
+  return resolve(import.meta.dir, "..", "workspaces")
+}
+
+const PERMISSIONS = {
+  // قراءة وبحث داخل المساحة (وخارجها يقيده opencode بنفسه عند الحاجة)
+  read: "allow",
+  list: "allow",
+  glob: "allow",
+  grep: "allow",
+  // التعديل مسموح، لكن opencode يمنع أي مسار خارج المساحة عبر external_directory
+  edit: "allow",
+  external_directory: "deny",
+  // الأوامر والأوسع خارج الشبكة مغلقة افتراضياً — تُفتح صراحة فقط
+  bash: "deny",
+  webfetch: "deny",
+  websearch: "deny",
+  // ميزات لا نريدها في خادم بلا واجهة
+  task: "deny",
+  question: "deny",
+  lsp: "deny",
+  skill: "deny",
+  todowrite: "allow",
+} as const
+
+function permissionProfile(): Record<string, string> {
+  const profile: Record<string, string> = { ...PERMISSIONS }
+  if (process.env.KANF_ENGINE_BASH === "1") profile.bash = "allow"
+  if (process.env.KANF_ENGINE_WEB === "1") {
+    profile.webfetch = "allow"
+    profile.websearch = "allow"
+  }
+  if (process.env.KANF_ENGINE_TASK === "1") profile.task = "allow"
+  return profile
+}
+
+const MARKER = "kanf:workspace"
+
+/**
+ * يجهّز مساحة عمل: ينشئ المجلد وملف صلاحيات opencode بداخله،
+ * فلا يحتاج الوكيل إلى `--auto` ليعدّل ملفات مشروعة.
+ *
+ * لا نلمس ملفاً كتبه المستخدم بنفسه: إن وُجد `.opencode/opencode.jsonc`
+ * بلا علمنا نتركه كما هو (صلاحياته هي التي تُطبَّق).
+ */
+export function ensureWorkspace(dir: string): string {
+  const resolved = resolve(dir)
+  mkdirSync(resolved, { recursive: true })
+
+  const configDir = join(resolved, ".opencode")
+  mkdirSync(configDir, { recursive: true })
+
+  const file = join(configDir, "opencode.jsonc")
+  const body = [
+    `// أنشأه منصة كنف تلقائياً لعزل مساحة عمل المشروع — يُعاد كتابته عند تغيير الإعدادات`,
+    `// ${MARKER}`,
+    JSON.stringify({ permission: permissionProfile() }, null, 2),
+    "",
+  ].join("\n")
+
+  try {
+    const existing = readFileSync(file, "utf8")
+    if (!existing.includes(MARKER)) return resolved // إعدادات المستخدم مقدَّسة
+    if (existing === body) return resolved
+  } catch {
+    // الملف غير موجود بعد
+  }
+
+  writeFileSync(file, body, "utf8")
+  return resolved
+}
+
+/** مساحة عمل المحادثة: مشروعها إن وُجد، وإلا مساحة شخصية مشتركة */
+export function sessionWorkspace(projectId: string | null | undefined): string {
+  const root = workspaceRoot()
+  return projectId ? join(root, projectId) : join(root, "_personal")
+}
+
+/**
  * هل أُعدّ محرك OpenCode لاستقبال طلبات؟ لا نريد محاولة بطيئة (وقد تصل إلى
  * ثوانٍ) في كل مرة إذا لم يكن للمحرك مزوّد نموذج أصلاً.
  */
@@ -96,7 +180,8 @@ export function engineConfigured(): boolean {
   return false
 }
 
-function workspace(): string {
+/** مساحة العمل الافتراضية: ما يحدّده المشغّل، أو مجلد التشغيل */
+function defaultWorkspace(): string {
   const dir = process.env.KANF_ENGINE_DIR
   if (dir && existsSync(dir)) return resolve(dir)
   return process.cwd()
@@ -171,11 +256,16 @@ function buildMessage(prompt: string, history: History): string {
   return full.slice(full.length - MAX_MESSAGE)
 }
 
-export async function runOpencode(prompt: string, history: History): Promise<{ reply: string; tokens: number }> {
+export async function runOpencode(
+  prompt: string,
+  history: History,
+  projectDir?: string,
+): Promise<{ reply: string; tokens: number }> {
   const engine = engineCommand()
   if (!engine) throw new Error("محرك OpenCode غير متوفر على هذا الخادم")
 
-  const dir = workspace()
+  // نجهّز المجلد وصلاحياته قبل التشغيل حتى يعمل الوكيل داخل حدوده
+  const dir = ensureWorkspace(projectDir ?? defaultWorkspace())
   const args = [...engine.prefix, "run", "--dir", dir, "--format", "json"]
   const model = process.env.KANF_ENGINE_MODEL
   if (model) args.push("-m", model)

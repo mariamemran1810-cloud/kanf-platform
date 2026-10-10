@@ -31,6 +31,9 @@ target
 *.db-shm
 *.db-wal
 
+# Kanf agent workspaces (per-project sandboxes for the OpenCode engine)
+packages/kanf/workspaces/
+
 # Local dev files
 opencode-dev
 UPCOMING_CHANGELOG.md

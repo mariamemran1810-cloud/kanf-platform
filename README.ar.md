@@ -7,6 +7,7 @@
 <p align="center"><strong>منصة SaaS عربية أولاً للوكيل البرمجي الذكي</strong></p>
 
 <p align="center">
+  <a href="https://mariamemran1810-cloud.github.io/kanf-platform/">🌐 الموقع المباشر</a> ·
   <a href="README.md">English</a> ·
   <a href="packages/kanf/README.md">توثيق المنصة</a> ·
   <a href="#-البداية-السريعة">البداية السريعة</a>
@@ -108,13 +109,29 @@ packages/kanf/
 
 ## ☁️ النشر
 
+### 🟣 نشر بنقرة واحدة على Render (مجاني، بلا بطاقة)
+
+المستودع يحوي `Dockerfile` و`render.yaml` جاهزين — **لا يوجد أمر بناء أصلاً** لأن
+المنصة بلا اعتماديات وقت التشغيل:
+
+**https://render.com/deploy?repo=https://github.com/mariamemran1810-cloud/kanf-platform**
+
+أو يدوياً من لوحة Render: **New +** ← **Web Service** ← اربط المستودع ← اختر **Docker**.
+الرابط النهائي بصيغة `https://<الاسم>.onrender.com`.
+
+يمرّر Render متغيّر `PORT` فيحترمه الخادم، ويولّد `KANF_SECRET` مرة واحدة، ويزرع
+الحسابات التجريبية تلقائياً عند أول تشغيل. التفاصيل الكاملة في
+[`packages/kanf/GUIDE.md`](packages/kanf/GUIDE.md).
+
 | الهدف | الطريقة |
 | --- | --- |
 | **GitHub Pages** (الموقع التعريفي) | يُنشر تلقائياً من `packages/kanf/public` مع كل دفع |
+| **Render** (المنصة عالمياً) | رابط النشر أعلاه — جاهز بلا إعداد |
 | **خادم خاص (VPS)** | `bun run --cwd packages/kanf start` خلف Caddy/Nginx |
-| **Railway / Fly.io / Render** | أمر البداية: `bun run --cwd packages/kanf start` |
+| **Railway / Fly.io** | أمر البداية: `bun run --cwd packages/kanf start` |
 
-متغيرات بيئة الإنتاج: `KANF_SECRET` (توقيع الجلسات)، `KANF_AI_API_KEY` (النموذج)، `KANF_PORT` (المنفذ).
+متغيرات بيئة الإنتاج: `KANF_SECRET` (توقيع الجلسات)، `KANF_AI_API_KEY` (النموذج)،
+`KANF_PORT` أو `PORT` (المنفذ)، `KANF_DB` (مسار قاعدة البيانات).
 
 ---
 

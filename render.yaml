@@ -1,0 +1,23 @@
+# كنف — نشر المنصة على Render
+# الاستخدام: Render ← New + ← Blueprint ← اربط هذا المستودع
+# أو من رابط مباشر: https://render.com/deploy?repo=https://github.com/mariamemran1810-cloud/kanf-platform
+services:
+  - type: web
+    name: kanf-platform
+    runtime: docker
+    plan: free
+    region: oregon
+    autoDeploy: true
+    healthCheckPath: /api/health
+    envVars:
+      # توقيع الجلسات: يولّده Render مرة واحدة ويبقيه ثابتاً
+      - key: KANF_SECRET
+        generateValue: true
+      - key: KANF_DB
+        value: /app/data/kanf.db
+      - key: NODE_ENV
+        value: production
+      # مفتاح النموذج: أضفه من لوحة Render إن أردت رداً حقيقياً،
+      # وإلا يعمل الوكيل في وضع العرض تلقائياً.
+      - key: KANF_AI_API_KEY
+        sync: false

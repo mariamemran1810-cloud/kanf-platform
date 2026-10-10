@@ -4,6 +4,7 @@ import {
   engineAvailable,
   engineConfigured,
   runOpencode,
+  sessionWorkspace,
   type EngineId,
   type History,
 } from "./engine"
@@ -157,10 +158,15 @@ export async function runAgent(sessionId: string, userPrompt: string) {
   addMessage(sessionId, "user", userPrompt, estimateTokens(userPrompt))
 
   const failures: string[] = []
+  const session = get<{ project_id: string | null }>(
+    `SELECT project_id FROM agent_sessions WHERE id = ?`,
+    sessionId,
+  )
+  const workspace = sessionWorkspace(session?.project_id)
 
   for (const engine of enginePlan()) {
     try {
-      const result = await dispatch(engine, userPrompt, history)
+      const result = await dispatch(engine, userPrompt, history, workspace)
       addMessage(sessionId, "assistant", result.reply, result.tokens)
       return { reply: result.reply, tokens: result.tokens, live: engine !== "demo", engine }
     } catch (error) {
@@ -180,8 +186,9 @@ async function dispatch(
   engine: EngineId,
   prompt: string,
   history: History,
+  dir: string,
 ): Promise<{ reply: string; tokens: number }> {
-  if (engine === "opencode") return await runOpencode(prompt, history)
+  if (engine === "opencode") return await runOpencode(prompt, history, dir)
   if (engine === "openai") return await runOpenAI(prompt, history)
   const reply = demoReply(prompt)
   return { reply, tokens: estimateTokens(reply) }

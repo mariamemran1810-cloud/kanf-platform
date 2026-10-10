@@ -190,6 +190,39 @@ KANF_SECRET="..." KANF_PORT=8080 bun run --cwd packages/kanf start
 
 خلف عامل ويب (Caddy / Nginx) مع HTTPS إلزامي لأن الجلسات تعتمد كوكي.
 
+### 🟣 النشر على Render (خطة مجانية، بلا بطاقة)
+
+المستودع يحوي `Dockerfile` و`render.yaml` جاهزين، فالنشر خطوتان:
+
+1. افتح الرابط:
+   **https://render.com/deploy?repo=https://github.com/mariamemran1810-cloud/kanf-platform**
+2. اضغط **Apply** — يقرأ Render ملف `render.yaml` ويبني الخدمة من الـDockerfile.
+
+أو يدوياً: Render ← **New +** ← **Web Service** ← اربط المستودع ←
+اختر **Docker** (سيجد `Dockerfile` تلقائياً) ← **Create Web Service**.
+
+الرابط النهائي يكون بصيغة `https://<اسم-الخدمة>.onrender.com`.
+
+**ما يوفّره الإعداد الموجود:**
+
+| البند | القيمة |
+| --- | --- |
+| أمر البناء | لا شيء — صفر اعتماديات وقت التشغيل |
+| أمر التشغيل | `bun run packages/kanf/src/index.ts` |
+| المنفذ | `PORT` الذي يمرّره Render (الكود يحترمه) |
+| فحص الصحة | `/api/health` |
+| `KANF_SECRET` | يولّده Render مرة واحدة ويبقيه ثابتاً |
+| `KANF_DB` | `/app/data/kanf.db` |
+| زرع البيانات | تلقائي — تُنشأ الحسابات التجريبية عند أول تشغيل |
+
+**ملاحظتان مهمّتان:**
+
+- على **الخطة المجانية** القرص غير دائم: تُعاد قاعدة البيانات إلى حالتها
+  عند كل إعادة نشر أو إعادة تشغيل. أضف قرصاً (Disk) عند الترقية ليبقى
+  بياناتك، أو استخدم `sync: false` لربط قاعدة خارجية.
+- لتشغيل نموذج حقيقي، أضف `KANF_AI_API_KEY` من لوحة Render
+  (**Environment** ← إضافة متغيّر). بلاه يعمل الوكيل في وضع العرض.
+
 ### ⚠️ مشغّلات GitHub Actions الوراثية
 
 ورث المستودع **26 مشغّلاً** من OpenCode، منها ما يُغلق القضايا وطلبات الدمج
@@ -202,8 +235,9 @@ KANF_SECRET="..." KANF_PORT=8080 bun run --cwd packages/kanf start
 
 | الاستضافة | الطريقة |
 | --- | --- |
+| 🟣 **Render** | جاهز تماماً — انظر «النشر على Render» أعلاه |
 | VPS خاص | `bun run --cwd packages/kanf start` + Caddy |
-| Railway / Fly.io / Render | أمر البداية نفسه + متغيّرات البيئة |
+| Railway / Fly.io | أمر البداية نفسه + متغيّرات البيئة |
 | GitHub Pages | موقع تعريفي فقط (workflow `.github/workflows/pages.yml`) |
 
 ### الأمان

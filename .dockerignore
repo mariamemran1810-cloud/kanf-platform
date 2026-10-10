@@ -1,3 +1,4 @@
+# --- قواعد المستودع الموروثة من OpenCode (لا تحذفها) ---
 .git
 .opencode
 .sst
@@ -10,3 +11,11 @@ node_modules
 **/.turbo
 **/.vite
 **/coverage
+
+# --- كنف: ما لا يدخل صورة المنصة أبداً ---
+**/*.db
+**/*.db-shm
+**/*.db-wal
+**/workspaces
+packages/kanf/workspaces
+**/*.log

@@ -10,6 +10,7 @@
 </p>
 
 <p align="center">
+  <a href="https://mariamemran1810-cloud.github.io/kanf-platform/">🌐 Live site</a> ·
   <a href="README.ar.md">العربية</a> ·
   <a href="packages/kanf/GUIDE.md">User guide</a> ·
   <a href="packages/kanf/README.md">Developer docs</a>
@@ -113,6 +114,16 @@ bun run --cwd packages/kanf lint        # oxlint → 0 errors
 Both run in CI on every push that touches `packages/kanf` — see [`.github/workflows/kanf-ci.yml`](.github/workflows/kanf-ci.yml).
 
 ## Deploying
+
+The repository ships a ready [`Dockerfile`](Dockerfile) and [`render.yaml`](render.yaml), so the
+platform deploys to Render in two clicks — there is no build step at all (zero runtime
+dependencies):
+
+**https://render.com/deploy?repo=https://github.com/mariamemran1810-cloud/kanf-platform**
+
+Render assigns `PORT` and the server honours it; the health check is `/api/health`, and demo
+accounts are seeded automatically on first boot. On the free plan the disk is ephemeral, so the
+database resets on each redeploy — attach a disk when you upgrade.
 
 See [`packages/kanf/GUIDE.md`](packages/kanf/GUIDE.md) for the full Arabic guide:
 environment variables, roles, screens, REST API, security model, and hosting options.
