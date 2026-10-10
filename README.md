@@ -75,12 +75,23 @@ packages/
 
 Everything except `packages/kanf` comes from upstream OpenCode and keeps its original behaviour.
 
+## Branches
+
+| Branch | Contents |
+| --- | --- |
+| `main` | The Kanf platform — default branch, what CI and Pages build. |
+| `dev` | A byte-for-byte snapshot of upstream OpenCode (6509 files), kept for provenance. Its tree matches the original commit exactly; the commits on top of it are packaging steps. |
+
+`dev` is a backup of the fork's source material, not an active line of development — work on `main`.
+
 ## Quality gates
 
 ```bash
 bun run --cwd packages/kanf typecheck   # tsc  → 0 errors
 bun run --cwd packages/kanf lint        # oxlint → 0 errors
 ```
+
+Both run in CI on every push that touches `packages/kanf` — see [`.github/workflows/kanf-ci.yml`](.github/workflows/kanf-ci.yml).
 
 ## Deploying
 
